@@ -1,0 +1,36 @@
+set number
+set tabstop=4
+set expandtab
+set timeout timeoutlen=1000 ttimeoutlen=100
+
+"nnoremap <M-j> <C-w><C-j>
+"nnoremap <M-k> <C-w><C-k>
+"nnoremap <M-h> <C-w><C-h>
+"nnoremap <M-l> <C-w><C-l>
+
+if $TMUX != ''
+    fun! VimMove(direction)
+        let old_wid = winnr()
+        silent! exe 'wincmd ' . a:direction
+        return old_wid == winnr()  
+    endfun
+
+    fun! TmuxMove(direction)
+        if VimMove(a:direction)
+            if a:direction == 'j'
+                call system("tmux select-pane -D")
+            elseif a:direction == 'k'
+                call system("tmux select-pane -U")
+            elseif a:direction == 'h'
+                call system("tmux select-pane -L")
+            elseif a:direction == 'l'
+                call system("tmux select-pane -R")
+            endif
+        endif
+    endfun
+    
+    nnoremap <silent> <c-w>j :silent call TmuxMove('j')<cr>
+    nnoremap <silent> <c-w>k :silent call TmuxMove('k')<cr>
+    nnoremap <silent> <c-w>h :silent call TmuxMove('h')<cr>
+    nnoremap <silent> <c-w>l :silent call TmuxMove('l')<cr>
+endif
